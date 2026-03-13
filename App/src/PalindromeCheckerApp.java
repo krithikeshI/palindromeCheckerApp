@@ -1,54 +1,81 @@
 import java.util.Scanner;
 import java.util.Stack;
 
-// Palindrome service class
-class PalindromeChecker {
+public class PalindromeCheckerApp {
 
-    // Method to check palindrome using Stack
-    public boolean checkPalindrome(String input) {
+    // Method 1: Reverse String and Compare
+    public static boolean checkPalindromeReverse(String str) {
+        String reversed = new StringBuilder(str).reverse().toString();
+        return str.equalsIgnoreCase(reversed);
+    }
 
-        // Remove spaces and convert to lowercase
-        String processed = input.replaceAll("\\s+", "").toLowerCase();
+    // Method 2: Two Pointer Technique
+    public static boolean checkPalindromeTwoPointer(String str) {
+        int left = 0;
+        int right = str.length() - 1;
 
+        while (left < right) {
+            if (Character.toLowerCase(str.charAt(left)) != Character.toLowerCase(str.charAt(right))) {
+                return false;
+            }
+            left++;
+            right--;
+        }
+        return true;
+    }
+
+    // Method 3: Using Stack
+    public static boolean checkPalindromeStack(String str) {
         Stack<Character> stack = new Stack<>();
 
-        // Push characters into stack
-        for (int i = 0; i < processed.length(); i++) {
-            stack.push(processed.charAt(i));
+        for (char c : str.toCharArray()) {
+            stack.push(Character.toLowerCase(c));
         }
 
-        // Compare characters
-        for (int i = 0; i < processed.length(); i++) {
-            if (processed.charAt(i) != stack.pop()) {
+        for (char c : str.toCharArray()) {
+            if (Character.toLowerCase(c) != stack.pop()) {
                 return false;
             }
         }
-
         return true;
     }
-}
-
-// Main Application class
-public class PalindromeCheckerApp {
 
     public static void main(String[] args) {
 
         Scanner scanner = new Scanner(System.in);
 
-        System.out.println("Enter a string to check if it is a palindrome:");
+        System.out.println("=== Palindrome Checker App (Performance Comparison) ===");
+        System.out.print("Enter a string: ");
         String input = scanner.nextLine();
 
-        // Create object of PalindromeChecker
-        PalindromeChecker checker = new PalindromeChecker();
+        // Algorithm 1: Reverse String
+        long start1 = System.nanoTime();
+        boolean result1 = checkPalindromeReverse(input);
+        long end1 = System.nanoTime();
+        long time1 = end1 - start1;
 
-        // Call palindrome method
-        boolean result = checker.checkPalindrome(input);
+        // Algorithm 2: Two Pointer
+        long start2 = System.nanoTime();
+        boolean result2 = checkPalindromeTwoPointer(input);
+        long end2 = System.nanoTime();
+        long time2 = end2 - start2;
 
-        if (result) {
-            System.out.println("The given string is a Palindrome.");
-        } else {
-            System.out.println("The given string is NOT a Palindrome.");
-        }
+        // Algorithm 3: Stack
+        long start3 = System.nanoTime();
+        boolean result3 = checkPalindromeStack(input);
+        long end3 = System.nanoTime();
+        long time3 = end3 - start3;
+
+        System.out.println("\n=== Results ===");
+
+        System.out.println("Reverse String Method: " + (result1 ? "Palindrome" : "Not Palindrome"));
+        System.out.println("Execution Time: " + time1 + " ns");
+
+        System.out.println("\nTwo Pointer Method: " + (result2 ? "Palindrome" : "Not Palindrome"));
+        System.out.println("Execution Time: " + time2 + " ns");
+
+        System.out.println("\nStack Method: " + (result3 ? "Palindrome" : "Not Palindrome"));
+        System.out.println("Execution Time: " + time3 + " ns");
 
         scanner.close();
     }
