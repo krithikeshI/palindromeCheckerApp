@@ -1,41 +1,107 @@
-import java.util.Scanner;
+import java.util.*;
 
-public class PalindromeCheckerApp {
+// Strategy Interface
+interface PalindromeStrategy {
+    boolean isPalindrome(String input);
+}
 
-    // Method to check palindrome ignoring spaces and case
-    public static boolean isPalindrome(String input) {
+// Stack Strategy Implementation
+class StackStrategy implements PalindromeStrategy {
 
-        // Normalize string: remove spaces and convert to lowercase
-        String normalized = input.replaceAll("\\s+", "").toLowerCase();
+    public boolean isPalindrome(String input) {
 
-        int left = 0;
-        int right = normalized.length() - 1;
+        Stack<Character> stack = new Stack<>();
 
-        // Check characters from both ends
-        while (left < right) {
-            if (normalized.charAt(left) != normalized.charAt(right)) {
+        for (char ch : input.toCharArray()) {
+            stack.push(ch);
+        }
+
+        String reversed = "";
+
+        while (!stack.isEmpty()) {
+            reversed += stack.pop();
+        }
+
+        return input.equals(reversed);
+    }
+}
+
+// Deque Strategy Implementation
+class DequeStrategy implements PalindromeStrategy {
+
+    public boolean isPalindrome(String input) {
+
+        Deque<Character> deque = new ArrayDeque<>();
+
+        for (char ch : input.toCharArray()) {
+            deque.addLast(ch);
+        }
+
+        while (deque.size() > 1) {
+
+            if (deque.removeFirst() != deque.removeLast()) {
                 return false;
             }
-            left++;
-            right--;
         }
 
         return true;
     }
+}
+
+// Context Class
+class PalindromeChecker {
+
+    private PalindromeStrategy strategy;
+
+    public void setStrategy(PalindromeStrategy strategy) {
+        this.strategy = strategy;
+    }
+
+    public boolean checkPalindrome(String input) {
+        return strategy.isPalindrome(input);
+    }
+}
+
+// Main Class
+public class PalindromeCheckerApp {
 
     public static void main(String[] args) {
 
-        Scanner scanner = new Scanner(System.in);
+        Scanner sc = new Scanner(System.in);
+        PalindromeChecker checker = new PalindromeChecker();
 
-        System.out.print("Enter a string: ");
-        String input = scanner.nextLine();
+        System.out.println("Enter a string:");
+        String input = sc.nextLine();
 
-        if (isPalindrome(input)) {
-            System.out.println("The given string is a palindrome (ignoring spaces and case).");
-        } else {
-            System.out.println("The given string is not a palindrome.");
+        System.out.println("Choose Algorithm:");
+        System.out.println("1. Stack Strategy");
+        System.out.println("2. Deque Strategy");
+
+        int choice = sc.nextInt();
+
+        switch (choice) {
+
+            case 1:
+                checker.setStrategy(new StackStrategy());
+                break;
+
+            case 2:
+                checker.setStrategy(new DequeStrategy());
+                break;
+
+            default:
+                System.out.println("Invalid choice");
+                return;
         }
 
-        scanner.close();
+        boolean result = checker.checkPalindrome(input);
+
+        if (result) {
+            System.out.println("The string is a Palindrome");
+        } else {
+            System.out.println("The string is NOT a Palindrome");
+        }
+
+        sc.close();
     }
 }
